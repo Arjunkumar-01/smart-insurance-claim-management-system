@@ -1,0 +1,334 @@
+{
+  "info": {
+    "name": "SICMS Authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Customer",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Sample\",\n  \"lastName\": \"Customer\",\n  \"email\": \"sample.customer@example.test\",\n  \"password\": \"<synthetic-valid-password>\",\n  \"confirmPassword\": \"<synthetic-valid-password>\"\n}" },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"sample.customer@example.test\",\n  \"password\": \"<synthetic-valid-password>\"\n}" },
+        "url": "{{baseUrl}}/api/auth/login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": ["const body = pm.response.json();", "if (body.accessToken) pm.environment.set('accessToken', body.accessToken);"] }
+      }]
+    },
+    {
+      "name": "Customer Profile & KYC",
+      "item": [
+        {
+          "name": "Create My Profile",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phoneNumber\": \"+1 (555) 010-1000\",\n  \"dateOfBirth\": \"1990-01-15\",\n  \"addressLine1\": \"1 Example Street\",\n  \"city\": \"Testville\",\n  \"state\": \"Test State\",\n  \"postalCode\": \"12345\",\n  \"country\": \"Exampleland\"\n}" },
+            "url": "{{baseUrl}}/api/customers/me/profile"
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/customers/me/profile"
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phoneNumber\": \"+1 (555) 010-2000\",\n  \"dateOfBirth\": \"1990-01-15\",\n  \"addressLine1\": \"2 Example Street\",\n  \"city\": \"Testville\",\n  \"state\": \"Test State\",\n  \"postalCode\": \"12345\",\n  \"country\": \"Exampleland\"\n}" },
+            "url": "{{baseUrl}}/api/customers/me/profile"
+          }
+        },
+        {
+          "name": "Get My KYC",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/customers/me/kyc"
+          }
+        },
+        {
+          "name": "Update My KYC",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"identityType\": \"national-id\",\n  \"identityNumber\": \"SYNTHETIC-123456\"\n}" },
+            "url": "{{baseUrl}}/api/customers/me/kyc"
+          }
+        },
+          {
+            "name": "Claim Documents",
+            "item": [
+              {
+                "name": "Upload Claim Document (Customer)",
+                "request": {
+                  "method": "POST",
+                  "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+                  "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+                  "url": "{{baseUrl}}/api/claims/me/{{claimId}}/documents"
+                },
+                "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.documentId) pm.environment.set('claimDocumentId', body.documentId);"] } }]
+              },
+              {
+                "name": "List Claim Documents",
+                "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me/{{claimId}}/documents" }
+              },
+              {
+                "name": "Download Claim Document",
+                "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me/{{claimId}}/documents/{{claimDocumentId}}" }
+              }
+            ]
+        }
+      ]
+    },
+    {
+      "name": "Product Management",
+      "item": [
+        {
+          "name": "Create Product (Administrator)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productCode\": \"HLT-SYN-001\",\n  \"name\": \"Synthetic Health Secure\",\n  \"description\": \"Synthetic product for local validation\",\n  \"category\": \"HEALTH\",\n  \"coverageDescription\": \"Synthetic medical coverage\",\n  \"coverageAmount\": 100000.00,\n  \"premiumAmount\": 125.50,\n  \"tenureMonths\": 12\n}" },
+            "url": "{{baseUrl}}/api/products"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const body = pm.response.json();", "if (body.productId) pm.environment.set('productId', body.productId);"] }
+          }]
+        },
+        {
+          "name": "Update Product (Administrator)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Synthetic Health Secure Plus\",\n  \"description\": \"Updated synthetic product\",\n  \"category\": \"HEALTH\",\n  \"coverageDescription\": \"Updated synthetic medical coverage\",\n  \"coverageAmount\": 120000.00,\n  \"premiumAmount\": 130.50,\n  \"tenureMonths\": 12,\n  \"status\": \"ACTIVE\"\n}" },
+            "url": "{{baseUrl}}/api/products/{{productId}}"
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/products/{{productId}}"
+          }
+        },
+        {
+          "name": "Create Comparison Product (Administrator)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productCode\": \"LIF-SYN-001\",\n  \"name\": \"Synthetic Life Secure\",\n  \"description\": \"Synthetic comparison product\",\n  \"category\": \"LIFE\",\n  \"coverageDescription\": \"Synthetic life coverage\",\n  \"coverageAmount\": 200000.00,\n  \"premiumAmount\": 210.00,\n  \"tenureMonths\": 24\n}" },
+            "url": "{{baseUrl}}/api/products"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["const body = pm.response.json();", "if (body.productId) pm.environment.set('comparisonProductId', body.productId);"] }
+          }]
+        },
+        {
+          "name": "List and Filter Products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/products?category=HEALTH&status=ACTIVE&page=0&size=20&sort=premiumAmount,asc"
+          }
+        },
+        {
+          "name": "Compare Products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/products/compare?ids={{productId}},{{comparisonProductId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policy Management",
+      "item": [
+        {
+          "name": "Purchase Policy (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"startDate\": \"2026-11-01\",\n  \"nominee\": {\n    \"name\": \"Synthetic Nominee\",\n    \"relationship\": \"Sibling\",\n    \"contactNumber\": \"+1 (555) 010-1010\"\n  }\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.policyId) pm.environment.set('policyId', body.policyId);", "if (body.policyNumber) pm.environment.set('policyNumber', body.policyNumber);"] } }]
+        },
+        {
+          "name": "List My Policies",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/policies/me?page=0&size=20" }
+        },
+        {
+          "name": "Get My Policy",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/policies/me/{{policyId}}" }
+        },
+        {
+          "name": "Renew My Policy",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/api/policies/me/{{policyId}}/renewal"
+          }
+        },
+        {
+          "name": "Update My Nominee",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Synthetic Nominee Updated\",\n  \"relationship\": \"Parent\",\n  \"contactNumber\": \"+1 (555) 010-1011\"\n}" },
+            "url": "{{baseUrl}}/api/policies/me/{{policyId}}/nominee"
+          }
+        },
+        {
+          "name": "Request Policy Cancellation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Synthetic cancellation request\"\n}" },
+            "url": "{{baseUrl}}/api/policies/me/{{policyId}}/cancellation"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.requestId) pm.environment.set('cancellationRequestId', body.requestId);"] } }]
+        },
+        {
+          "name": "List Pending Cancellations (Administrator)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/policies/cancellations" }
+        },
+        {
+          "name": "Approve Cancellation (Administrator)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"APPROVED\",\n  \"decisionComment\": \"Synthetic approval\"\n}" },
+            "url": "{{baseUrl}}/api/policies/cancellations/{{cancellationRequestId}}/decision"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claim Management",
+      "item": [
+        {
+          "name": "Submit Claim (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"policyId\": \"{{policyId}}\",\n  \"claimAmount\": 500.00,\n  \"claimType\": \"HEALTH\",\n  \"incidentDate\": \"2026-10-24\",\n  \"description\": \"Synthetic claim incident\"\n}" },
+            "url": "{{baseUrl}}/api/claims"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.claimId) pm.environment.set('claimId', body.claimId);", "if (body.claimNumber) pm.environment.set('claimNumber', body.claimNumber);"] } }]
+        },
+        {
+          "name": "List My Claims",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me?page=0&size=20" }
+        },
+        {
+          "name": "Get My Claim",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me/{{claimId}}" }
+        },
+        {
+          "name": "Get My Claim Status History",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me/{{claimId}}/history" }
+        }
+      ]
+    },
+    {
+      "name": "Claim Review",
+      "item": [
+        { "name": "Review Queue", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/review?page=0&size=20" } },
+        { "name": "Review Claim Detail", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/review/{{claimId}}" } },
+        { "name": "Get Claim Status History for Review", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/review/{{claimId}}" } },
+        { "name": "List Review Documents", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/review/{{claimId}}/documents" } },
+        { "name": "Download Review Document", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/review/{{claimId}}/documents/{{claimDocumentId}}" } },
+        { "name": "Start Review", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Initial review started\"\n}" }, "url": "{{baseUrl}}/api/claims/review/{{claimId}}/start" } },
+        { "name": "Request Additional Documents", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Please provide additional synthetic evidence\"\n}" }, "url": "{{baseUrl}}/api/claims/review/{{claimId}}/request-documents" } },
+        { "name": "Resume Review", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Additional documents reviewed\"\n}" }, "url": "{{baseUrl}}/api/claims/review/{{claimId}}/resume" } },
+        { "name": "Approve Claim", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Synthetic approval\"\n}" }, "url": "{{baseUrl}}/api/claims/review/{{claimId}}/approve" } },
+        { "name": "Reject Claim", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Synthetic rejection\"\n}" }, "url": "{{baseUrl}}/api/claims/review/{{claimId}}/reject" } }
+      ]
+    },
+    {
+      "name": "Payment Management",
+      "item": [
+        {
+          "name": "Make Premium Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"policyId\": \"{{policyId}}\",\n  \"paymentMethod\": \"CARD\"\n}" },
+            "url": "{{baseUrl}}/api/payments"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.paymentId) pm.environment.set('paymentId', body.paymentId);", "if (body.paymentNumber) pm.environment.set('paymentNumber', body.paymentNumber);", "if (body.invoice) pm.environment.set('invoiceId', body.invoice.invoiceId);", "if (body.receipt) pm.environment.set('receiptId', body.receipt.receiptId);"] } }]
+        },
+        { "name": "List My Payments", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/payments/me?page=0&size=20" } },
+        { "name": "Get My Payment", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/payments/me/{{paymentId}}" } },
+        { "name": "Get My Invoice", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/payments/me/{{paymentId}}/invoice" } },
+        { "name": "Get My Receipt", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/payments/me/{{paymentId}}/receipt" } },
+        { "name": "Download My Receipt PDF", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/payments/me/{{paymentId}}/receipt/download" } }
+      ]
+    },
+    {
+      "name": "Claim Settlement",
+      "item": [
+        {
+          "name": "Settle Approved Claim (Claims Officer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{claimsOfficerAccessToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Synthetic settlement\"\n}" },
+            "url": "{{baseUrl}}/api/claims/review/{{claimId}}/settle"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["const body = pm.response.json();", "if (body.settlementId) pm.environment.set('settlementId', body.settlementId);", "if (body.settlementNumber) pm.environment.set('settlementNumber', body.settlementNumber);"] } }]
+        },
+        {
+          "name": "Get My Claim Settlement",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/claims/me/{{claimId}}/settlement" }
+        }
+      ]
+    },
+    {
+      "name": "Reports & Analytics",
+      "item": [
+        { "name": "My Report Summary", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }], "url": "{{baseUrl}}/api/reports/me/summary" } },
+        { "name": "Administrator Overview", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/reports/admin/overview" } },
+        { "name": "Monthly Revenue", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/reports/admin/revenue/monthly?year=2026" } },
+        { "name": "Product Performance", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/reports/admin/products/performance" } },
+        { "name": "Claim Settlement Trend", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/reports/admin/settlements/trend?year=2026" } }
+      ]
+    },
+    {
+      "name": "Administration",
+      "item": [
+        { "name": "List Users", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/admin/users?page=0&size=20&sort=createdAt" } },
+        { "name": "Get User", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/admin/users/{{adminTargetUserId}}" } },
+        { "name": "Change Account Status", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"ACTIVE\"\n}" }, "url": "{{baseUrl}}/api/admin/users/{{adminTargetUserId}}/status" } }
+      ]
+    },
+    {
+      "name": "Audit",
+      "item": [
+        { "name": "List Audit Logs", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{administratorAccessToken}}" }], "url": "{{baseUrl}}/api/admin/audit-logs?page=0&size=20" } }
+      ]
+    }
+  ]
+}

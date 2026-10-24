@@ -1,0 +1,50 @@
+# Java / Maven
+**/target/
+*.class
+
+# Frontend / Node
+**/node_modules/
+**/dist/
+**/coverage/
+**/.vite/
+*.tsbuildinfo
+
+# Environment configuration
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# SICMS runtime data
+backend/var/
+backend/logs/
+*.log
+
+# Database exports
+*.dump
+*.backup
+
+# IDE metadata
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.iml
+.classpath
+.project
+.settings/
+**/.settings/
+out/
+**/out/
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary and editor files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
