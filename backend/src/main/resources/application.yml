@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/sicms
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:root}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -32,25 +32,25 @@ application:
     max-file-size: ${MAX_FILE_SIZE:10MB}
 security:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET:7Kp9xR2mV8qN4tY6cF3wH1sJ5uB0dLZa}
     access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:PT15M}
 sicms:
   development:
     bootstrap-accounts:
-      enabled: ${BOOTSTRAP_ACCOUNTS_ENABLED:false}
+      enabled: ${BOOTSTRAP_ACCOUNTS_ENABLED:true}
       agent:
         email: agent.local@example.test
-        password: ${DEV_AGENT_PASSWORD:}
+        password: ${DEV_AGENT_PASSWORD:LocalAgent!2026}
         first-name: Local
         last-name: Agent
       claims-officer:
         email: claims.officer.local@example.test
-        password: ${DEV_CLAIMS_OFFICER_PASSWORD:}
+        password: ${DEV_CLAIMS_OFFICER_PASSWORD:LocalClaims!2026}
         first-name: Local
         last-name: ClaimsOfficer
       administrator:
         email: administrator.local@example.test
-        password: ${DEV_ADMINISTRATOR_PASSWORD:}
+        password: ${DEV_ADMINISTRATOR_PASSWORD:LocalAdmin!2026}
         first-name: Local
         last-name: Administrator
 management:
