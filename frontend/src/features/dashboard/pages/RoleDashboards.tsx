@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Box, Button, Paper, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import { ApiError } from "../../../api/api-error";
 import { PageHeader } from "../../../components/layout/PageHeader";
 import { SkeletonState } from "../../../components/feedback/SkeletonState";
 import { ErrorState } from "../../../components/feedback/ErrorState";
@@ -56,6 +57,32 @@ export function CustomerDashboardPage() {
     queryFn: reportApi.customer,
   });
   if (query.isPending) return <SkeletonState rows={5} />;
+  if (query.error instanceof ApiError && query.error.kind === "not-found")
+    return (
+      <>
+        <PageHeader
+          eyebrow="Customer"
+          title="Your insurance overview"
+          description="Manage your insurance services from one secure workspace."
+        />
+        <Paper elevation={0} sx={{ p: 4, border: 1, borderColor: "divider" }}>
+          <Typography variant="h6" gutterBottom>
+            Complete your customer profile
+          </Typography>
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            We need a few more details before we can show your insurance
+            overview.
+          </Typography>
+          <Button
+            component={Link}
+            to="/app/customer/profile"
+            variant="contained"
+          >
+            Complete profile
+          </Button>
+        </Paper>
+      </>
+    );
   if (query.error || !query.data)
     return (
       <ErrorState

@@ -90,6 +90,8 @@ public class Policy {
 
     public void cancel() { this.status = PolicyStatus.CANCELLED; }
 
+    public void expire() { this.status = PolicyStatus.EXPIRED; }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();

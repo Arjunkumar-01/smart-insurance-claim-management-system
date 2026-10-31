@@ -1,13 +1,15 @@
 spring:
   application:
     name: sicms-backend
+  profiles:
+    default: local
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:5432/sicms
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -35,24 +37,14 @@ security:
     secret: ${JWT_SECRET:7Kp9xR2mV8qN4tY6cF3wH1sJ5uB0dLZa}
     access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:PT15M}
 sicms:
-  development:
-    bootstrap-accounts:
-      enabled: ${BOOTSTRAP_ACCOUNTS_ENABLED:true}
-      agent:
-        email: agent.local@example.test
-        password: ${DEV_AGENT_PASSWORD:LocalAgent!2026}
-        first-name: Local
-        last-name: Agent
-      claims-officer:
-        email: claims.officer.local@example.test
-        password: ${DEV_CLAIMS_OFFICER_PASSWORD:LocalClaims!2026}
-        first-name: Local
-        last-name: ClaimsOfficer
-      administrator:
-        email: administrator.local@example.test
-        password: ${DEV_ADMINISTRATOR_PASSWORD:LocalAdmin!2026}
-        first-name: Local
-        last-name: Administrator
+  demo-data:
+    enabled: ${APP_DEMO_DATA_ENABLED:true}
+    reset: ${APP_DEMO_DATA_RESET:true}
+    expected-database: ${APP_DEMO_DATA_DATABASE:sicms}
+    customer-password: ${SICMS_DEMO_CUSTOMER_PASSWORD:Maya@Thompson}
+    agent-password: ${SICMS_DEMO_AGENT_PASSWORD:Ethan@Brooks}
+    claims-officer-password: ${SICMS_DEMO_CLAIMS_OFFICER_PASSWORD:Priya@Raman}
+    administrator-password: ${SICMS_DEMO_ADMIN_PASSWORD:Daniel@Mercer}
 management:
   endpoints:
     web:

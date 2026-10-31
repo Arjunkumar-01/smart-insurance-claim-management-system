@@ -2,6 +2,7 @@ package com.talentfarm.sicms.report.service;
 
 import com.talentfarm.sicms.claim.domain.ClaimStatus;
 import com.talentfarm.sicms.customer.repository.CustomerRepository;
+import com.talentfarm.sicms.exception.ResourceNotFoundException;
 import com.talentfarm.sicms.policy.domain.PolicyStatus;
 import com.talentfarm.sicms.report.dto.response.AdminOverviewResponse;
 import com.talentfarm.sicms.report.dto.response.ClaimStatusCount;
@@ -120,7 +121,10 @@ public class ReportService {
     private long statusCount(List<ClaimStatusCount> counts, ClaimStatus status) {
         return counts.stream().filter(count -> count.status() == status).mapToLong(ClaimStatusCount::count).findFirst().orElse(0L);
     }
-    private UUID currentCustomerId(Authentication authentication) { return customerRepository.findByUserId(((CustomUserDetails) authentication.getPrincipal()).getUserId()).orElseThrow().getId(); }
+    private UUID currentCustomerId(Authentication authentication) {
+        return customerRepository.findByUserId(((CustomUserDetails) authentication.getPrincipal()).getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer profile was not found")).getId();
+    }
     private BigDecimal money(Object value) { return value == null ? BigDecimal.ZERO.setScale(2) : new BigDecimal(value.toString()).setScale(2, RoundingMode.HALF_UP); }
     private Map<UUID, Long> groupedLong(String query) {
         Map<UUID, Long> values = new java.util.HashMap<>();

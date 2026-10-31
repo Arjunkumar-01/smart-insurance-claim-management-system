@@ -1,5 +1,7 @@
 # Smart Insurance Claim Management System (SICMS)
 
+For safe, fictional local presentation data, see [the demo-data guide](docs/DEMO_DATA_GUIDE.md).
+
 **An enterprise insurance operations platform for policy servicing, premium processing, controlled Claim review, settlement, reporting, and auditability.**
 
 ## 📌 Project Overview
@@ -413,10 +415,6 @@ Optional:
 | `DOCUMENT_STORAGE_PATH`       | `./var/documents`                                  |
 | `MAX_FILE_SIZE`               | `10MB`                                             |
 | `MAX_REQUEST_SIZE`            | `12MB`                                             |
-| `BOOTSTRAP_ACCOUNTS_ENABLED`  | `false`                                            |
-| `DEV_AGENT_PASSWORD`          | Required only when privileged bootstrap is enabled |
-| `DEV_CLAIMS_OFFICER_PASSWORD` | Required only when privileged bootstrap is enabled |
-| `DEV_ADMINISTRATOR_PASSWORD`  | Required only when privileged bootstrap is enabled |
 
 PowerShell example:
 

@@ -20,7 +20,7 @@ Common optional variables:
 
 [.env.example](.env.example) is a safe checklist only; Spring Boot does not automatically import it. Do not commit a populated `.env` file.
 
-Privileged development-account bootstrapping is disabled by default. Local use requires `BOOTSTRAP_ACCOUNTS_ENABLED=true` and environment-provided `DEV_AGENT_PASSWORD`, `DEV_CLAIMS_OFFICER_PASSWORD`, and `DEV_ADMINISTRATOR_PASSWORD`. Public registration remains Customer-only.
+For the guarded, fictional local presentation dataset, see [the demo-data guide](../docs/DEMO_DATA_GUIDE.md). It requires an explicit reset flag and a PostgreSQL backup before deletion.
 
 ## Database
 

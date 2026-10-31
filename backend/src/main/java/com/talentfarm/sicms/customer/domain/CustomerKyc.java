@@ -66,6 +66,10 @@ public class CustomerKyc {
         this.identityNumber = identityNumber;
     }
 
+    public void verify() {
+        this.kycStatus = KycStatus.VERIFIED;
+    }
+
     @PrePersist
     void onCreate() {
         Instant now = Instant.now();
